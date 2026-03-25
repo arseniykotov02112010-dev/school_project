@@ -92,7 +92,7 @@
             border-color: #0d6efd;
             box-shadow: 0 0 0 3px rgba(13,110,253,0.2);
         }
-        /* Радио-группа: адаптивность */
+        /* Радио-группа */
         .radio-group {
             display: flex;
             gap: 12px;
@@ -108,19 +108,26 @@
             background: #f8f9fa;
             padding: 8px 16px;
             border-radius: 40px;
-            transition: background 0.2s;
+            transition: all 0.2s;
             white-space: nowrap;
+            border: 1px solid #e9ecef;
         }
         .radio-group label:hover {
             background: #e9ecef;
         }
-        .radio-group input[type="radio"] {
-            width: auto;
-            margin: 0;
-            padding: 0;
-            accent-color: #0d6efd;
+        /* Выбранный вариант */
+        .radio-group input[type="radio"]:checked + label,
+        .radio-group label:has(input:checked) {
+            background: #0d6efd;
+            color: white;
+            border-color: #0d6efd;
         }
-        /* На узких экранах радио-кнопки становятся вертикальными */
+        .radio-group input[type="radio"] {
+            display: none;
+        }
+        .radio-group label {
+            user-select: none;
+        }
         @media (max-width: 500px) {
             .radio-group {
                 flex-direction: column;
@@ -175,7 +182,6 @@
             color: #6c757d;
             border-top: 1px solid #e9ecef;
         }
-        /* Убираем стрелки у number полей на некоторых браузерах */
         input[type="number"] {
             -moz-appearance: textfield;
         }
@@ -208,7 +214,7 @@
 
                 <div class="form-group">
                     <label><i>🛢️</i> Тип масла</label>
-                    <div class="radio-group">
+                    <div class="radio-group" id="oilTypeGroup">
                         <label><input type="radio" name="oilType" value="synthetic" checked> Синтетическое</label>
                         <label><input type="radio" name="oilType" value="semi_synthetic"> Полусинтетическое</label>
                         <label><input type="radio" name="oilType" value="mineral"> Минеральное</label>
@@ -311,6 +317,14 @@
         if (optimal < 1000) optimal = 1000;
         return Math.round(optimal / 10) * 10;
     }
+
+    // Автоматическое выделение текста при фокусе на полях ввода
+    const numberInputs = document.querySelectorAll('input[type="number"]');
+    numberInputs.forEach(input => {
+        input.addEventListener('focus', function() {
+            this.select();
+        });
+    });
 
     document.getElementById('calcForm').addEventListener('submit', function(e) {
         e.preventDefault();

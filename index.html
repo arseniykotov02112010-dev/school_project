@@ -76,6 +76,34 @@
             margin-right: 6px;
             color: #0d6efd;
         }
+        .input-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .input-wrapper input, .input-wrapper select {
+            flex: 1;
+            width: auto;
+        }
+        .step-btn {
+            background: #f0f0f0;
+            border: 1px solid #ced4da;
+            border-radius: 12px;
+            padding: 0 16px;
+            height: 48px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            user-select: none;
+        }
+        .step-btn:active {
+            background: #e0e0e0;
+            transform: scale(0.96);
+        }
         input, select {
             width: 100%;
             padding: 12px 16px;
@@ -102,6 +130,13 @@
             align-items: center;
             gap: 6px;
             cursor: pointer;
+            background: #f8f9fa;
+            padding: 8px 16px;
+            border-radius: 40px;
+            transition: 0.2s;
+        }
+        .radio-group label:active {
+            background: #e9ecef;
         }
         .error {
             color: #dc3545;
@@ -140,9 +175,34 @@
             color: #6c757d;
             border-top: 1px solid #e9ecef;
         }
-        @media (max-width: 500px) {
+
+        /* Адаптация для мобильных */
+        @media (max-width: 600px) {
+            .card-body {
+                padding: 16px;
+            }
+            .radio-group {
+                flex-direction: column;
+                gap: 8px;
+            }
+            .radio-group label {
+                width: 100%;
+                justify-content: center;
+            }
+            .step-btn {
+                padding: 0 12px;
+                height: 44px;
+            }
+            .result .km {
+                font-size: 2rem;
+            }
+        }
+        @media (max-width: 480px) {
             .card-header h1 { font-size: 1.4rem; }
-            .result .km { font-size: 2.2rem; }
+            .step-btn {
+                padding: 0 10px;
+                height: 40px;
+            }
         }
     </style>
 </head>
@@ -163,7 +223,11 @@
             <form id="calcForm" novalidate>
                 <div class="form-group">
                     <label for="baseInterval"><i>📏</i> Базовый интервал (км)</label>
-                    <input type="number" id="baseInterval" step="1000" placeholder="например, 15000" required>
+                    <div class="input-wrapper">
+                        <button type="button" class="step-btn" data-target="baseInterval" data-step="-1000">−1000</button>
+                        <input type="number" id="baseInterval" step="1000" placeholder="например, 15000" required>
+                        <button type="button" class="step-btn" data-target="baseInterval" data-step="1000">+1000</button>
+                    </div>
                     <div class="form-text">Рекомендованный производителем интервал.</div>
                 </div>
 
@@ -178,7 +242,11 @@
 
                 <div class="form-group">
                     <label for="oilQuality"><i>⭐</i> Качество масла (1–10)</label>
-                    <input type="number" id="oilQuality" min="1" max="10" step="1" placeholder="1–10" required>
+                    <div class="input-wrapper">
+                        <button type="button" class="step-btn" data-target="oilQuality" data-step="-1">−1</button>
+                        <input type="number" id="oilQuality" min="1" max="10" step="1" placeholder="1–10" required>
+                        <button type="button" class="step-btn" data-target="oilQuality" data-step="1">+1</button>
+                    </div>
                     <div class="form-text">1 – очень низкое, 10 – идеальное.</div>
                 </div>
 
@@ -192,37 +260,60 @@
                     </select>
                 </div>
 
+                <!-- Процентные поля с кнопками +1/-1 -->
                 <div class="form-group">
                     <label for="overload"><i>🚛</i> Перегрузка (%)</label>
-                    <input type="number" id="overload" min="0" max="100" value="0" step="1" required>
+                    <div class="input-wrapper">
+                        <button type="button" class="step-btn" data-target="overload" data-step="-1">−1</button>
+                        <input type="number" id="overload" min="0" max="100" value="0" step="1" required>
+                        <button type="button" class="step-btn" data-target="overload" data-step="1">+1</button>
+                    </div>
                     <div class="form-text">Время работы при >75% крутящего момента (буксировка, горы, полная загрузка).</div>
                 </div>
 
                 <div class="form-group">
                     <label for="jam"><i>🚗</i> Пробки (%)</label>
-                    <input type="number" id="jam" min="0" max="100" value="0" step="1" required>
-                    <div class="form-text">Процент времени в пробках.</div>
+                    <div class="input-wrapper">
+                        <button type="button" class="step-btn" data-target="jam" data-step="-1">−1</button>
+                        <input type="number" id="jam" min="0" max="100" value="0" step="1" required>
+                        <button type="button" class="step-btn" data-target="jam" data-step="1">+1</button>
+                    </div>
                 </div>
 
                 <div class="form-group">
                     <label for="shortTrip"><i>🏠</i> Короткие поездки (%)</label>
-                    <input type="number" id="shortTrip" min="0" max="100" value="0" step="1" required>
-                    <div class="form-text">Поездки короче 10 км.</div>
+                    <div class="input-wrapper">
+                        <button type="button" class="step-btn" data-target="shortTrip" data-step="-1">−1</button>
+                        <input type="number" id="shortTrip" min="0" max="100" value="0" step="1" required>
+                        <button type="button" class="step-btn" data-target="shortTrip" data-step="1">+1</button>
+                    </div>
                 </div>
 
                 <div class="form-group">
                     <label for="fastSpeed"><i>⚡</i> Скорость >125 км/ч (%)</label>
-                    <input type="number" id="fastSpeed" min="0" max="100" value="0" step="1" required>
+                    <div class="input-wrapper">
+                        <button type="button" class="step-btn" data-target="fastSpeed" data-step="-1">−1</button>
+                        <input type="number" id="fastSpeed" min="0" max="100" value="0" step="1" required>
+                        <button type="button" class="step-btn" data-target="fastSpeed" data-step="1">+1</button>
+                    </div>
                 </div>
 
                 <div class="form-group">
                     <label for="hardAccel"><i>🚀</i> Резкие разгоны (%)</label>
-                    <input type="number" id="hardAccel" min="0" max="100" value="0" step="1" required>
+                    <div class="input-wrapper">
+                        <button type="button" class="step-btn" data-target="hardAccel" data-step="-1">−1</button>
+                        <input type="number" id="hardAccel" min="0" max="100" value="0" step="1" required>
+                        <button type="button" class="step-btn" data-target="hardAccel" data-step="1">+1</button>
+                    </div>
                 </div>
 
                 <div class="form-group">
                     <label for="hardBraking"><i>🛑</i> Резкие торможения (%)</label>
-                    <input type="number" id="hardBraking" min="0" max="100" value="0" step="1" required>
+                    <div class="input-wrapper">
+                        <button type="button" class="step-btn" data-target="hardBraking" data-step="-1">−1</button>
+                        <input type="number" id="hardBraking" min="0" max="100" value="0" step="1" required>
+                        <button type="button" class="step-btn" data-target="hardBraking" data-step="1">+1</button>
+                    </div>
                 </div>
 
                 <button type="submit" class="btn">Рассчитать</button>
@@ -243,7 +334,7 @@
     const HARD_ACCEL_FACTOR = 0.002;
     const HARD_BRAKING_FACTOR = 0.001;
 
-    // Функция расчёта (исправлена)
+    // Функция расчёта
     function calculateInterval(params) {
         let oilQuality = params.oilQuality;
         let A_oil, B_oil;
@@ -270,18 +361,34 @@
 
         let optimal = params.baseInterval * K_oil * K_overload * K_shortTrip * K_drivestyle * K_fueltype;
 
-        // Ограничение минимального интервала 1000 км
         if (optimal < 1000) optimal = 1000;
-
-        // Округление до десятков (ближайших)
         return Math.round(optimal / 10) * 10;
     }
 
-    // Валидация и отображение
+    // Обработчики кнопок +/-
+    document.querySelectorAll('.step-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const targetId = this.dataset.target;
+            const step = parseInt(this.dataset.step);
+            const input = document.getElementById(targetId);
+            if (!input) return;
+            let current = parseFloat(input.value);
+            if (isNaN(current)) current = 0;
+            let newValue = current + step;
+            const min = parseFloat(input.min);
+            const max = parseFloat(input.max);
+            if (!isNaN(min)) newValue = Math.max(newValue, min);
+            if (!isNaN(max)) newValue = Math.min(newValue, max);
+            input.value = newValue;
+            // Триггер события change для валидации (если нужно)
+            input.dispatchEvent(new Event('change', { bubbles: true }));
+        });
+    });
+
+    // Валидация и отправка
     document.getElementById('calcForm').addEventListener('submit', function(e) {
         e.preventDefault();
 
-        // Сбор данных с проверкой на число
         let baseInterval = parseFloat(document.getElementById('baseInterval').value);
         let oilType = document.querySelector('input[name="oilType"]:checked').value;
         let oilQuality = parseFloat(document.getElementById('oilQuality').value);
@@ -293,27 +400,20 @@
         let hardAccel = parseFloat(document.getElementById('hardAccel').value);
         let hardBraking = parseFloat(document.getElementById('hardBraking').value);
 
-        // Очищаем предыдущие ошибки
         document.querySelectorAll('.error').forEach(el => el.remove());
-
         let hasError = false;
         let firstInvalidField = null;
 
-        // Проверка базового интервала
         if (isNaN(baseInterval) || baseInterval <= 0) {
             showError('baseInterval', 'Введите положительное число');
             if (!firstInvalidField) firstInvalidField = 'baseInterval';
             hasError = true;
         }
-
-        // Проверка качества масла
         if (isNaN(oilQuality) || oilQuality < 1 || oilQuality > 10) {
             showError('oilQuality', 'Оценка должна быть от 1 до 10');
             if (!firstInvalidField) firstInvalidField = 'oilQuality';
             hasError = true;
         }
-
-        // Проверка процентов
         const percentFields = ['overload', 'jam', 'shortTrip', 'fastSpeed', 'hardAccel', 'hardBraking'];
         for (let field of percentFields) {
             let val = parseFloat(document.getElementById(field).value);
@@ -325,22 +425,14 @@
         }
 
         if (hasError) {
-            if (firstInvalidField) {
-                document.getElementById(firstInvalidField).focus();
-            }
+            if (firstInvalidField) document.getElementById(firstInvalidField).focus();
             return;
         }
 
-        // Расчёт
-        const params = {
-            baseInterval, oilType, oilQuality, fuelType,
-            overload, jam, shortTrip, fastSpeed, hardAccel, hardBraking
-        };
+        const params = { baseInterval, oilType, oilQuality, fuelType, overload, jam, shortTrip, fastSpeed, hardAccel, hardBraking };
         let result = calculateInterval(params);
         document.getElementById('resultKm').innerText = result + ' км';
         document.getElementById('resultBlock').style.display = 'block';
-
-        // Прокрутка к результату на мобильных
         document.getElementById('resultBlock').scrollIntoView({ behavior: 'smooth' });
     });
 
@@ -349,7 +441,7 @@
         let errorDiv = document.createElement('div');
         errorDiv.className = 'error';
         errorDiv.innerHTML = '⚠️ ' + message;
-        input.parentNode.appendChild(errorDiv);
+        input.parentNode.parentNode.appendChild(errorDiv); // .input-wrapper + error
         input.setAttribute('aria-invalid', 'true');
     }
 </script>
